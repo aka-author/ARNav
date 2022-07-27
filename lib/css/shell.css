@@ -54,9 +54,11 @@
 	--content-vertical-padding: 				var(--base-indent);
 
 	--toc-outer-left-margin:					15pt;
-	--toc-open-close-box-width:					15pt;
+	--toc-open-close-box-width:					24px;
 	--toc-entry-margin-top:  					0pt;
 	--toc-entry-margin-bottom:  				0pt;
+	--toc-title-margin-top: 					6pt;
+	--toc-title-margin-bottom:					6pt;
 	--toc-link-normal-color:					#222222;
 	--toc-link-visited-color:					var(--toc-link-normal-color);
 }
@@ -239,8 +241,13 @@ div.matterFrameletAlone {
 
 /* TOC */
 
+span.tocCloseBox img,  span.tocOpenBox img {
+	width: 				24px;
+	height: 			24px;
+	vertical-align: 	middle;
+}
+
 span.tocCloseBox, span.tocOpenBox {
-    float: 				left;
     width: 				var(--toc-open-close-box-width);
 	cursor: 			pointer;
 }
@@ -262,8 +269,8 @@ span.tocTitleNodeSelected, span.tocTitleLeafSelected {
 div.tocTitleNode {
 	margin-top: 		var(--toc-entry-margin-top);
 	margin-bottom: 		var(--toc-entry-margin-bottom);
-	padding-top:   		7pt;
-    padding-bottom:   	7pt;
+	padding-top:   		var(--toc-title-margin-top);
+    padding-bottom:   	var(--toc-title-margin-bottom);
 	text-indent: 		calc(-1*var(--toc-open-close-box-width));
 }
  
@@ -272,8 +279,8 @@ div.tocTitleNodeSelected {
 	margin-top: 		var(--toc-entry-margin-top);
     margin-bottom: 		var(--toc-entry-margin-bottom);
 	margin-left: 		-2pt;
-    padding-top:   		7pt;
-    padding-bottom:   	7pt;
+	padding-top:   		var(--toc-title-margin-top);
+    padding-bottom:   	var(--toc-title-margin-bottom);
     padding-left:   	2pt;
     padding-right:   	5pt;
 	border-radius: 		5pt;
@@ -285,8 +292,9 @@ div.tocTitleLeaf {
 	margin-top: 		var(--toc-entry-margin-top);
 	margin-bottom: 		var(--toc-entry-margin-bottom);
     margin-left:  		calc(-1*var(--toc-open-close-box-width));
-	padding-top:   		7pt;
-    padding-bottom:   	7pt;
+	padding-left:   	2pt;
+	padding-top:   		var(--toc-title-margin-top);
+    padding-bottom:   	var(--toc-title-margin-bottom);
 }
 
 div.tocTitleLeafSelected {
@@ -294,8 +302,8 @@ div.tocTitleLeafSelected {
 	margin-top: 		var(--toc-entry-margin-top);
     margin-bottom: 		var(--toc-entry-margin-bottom);
 	margin-left: 		-18pt;
-    padding-top:   		7pt;
-    padding-bottom:   	7pt;
+	padding-top:   		var(--toc-title-margin-top);
+    padding-bottom:   	var(--toc-title-margin-bottom);
     padding-left:   	2pt;
     padding-right:   	5pt;
 	border-radius: 		5pt;
@@ -504,5 +512,85 @@ body {
 }
 
 
+/* Matter */
 
+@font-face {
+	font-family: 'Regular';
+	src: url('../../fonts/nunito-sans.regular.ttf') format('truetype');
+  }
+  
+@font-face {
+	font-family: 'Bold';
+	src: url('../../fonts/nunito-sans.bold.ttf') format('truetype');
+}
+  
+@font-face {
+	font-family: 'Italic';
+	src: url('../../fonts/nunito-sans.italic.ttf') format('truetype');
+}
+  
+@font-face {
+	font-family: 'Bold italic';
+	src: url('../../fonts/nunito-sans.bold-italic.ttf') format('truetype');
+}
+  
+div {
+	font-family: 'Regular';
+}
+  
+i {
+	font-family: 'Italic';
+}
+  
+h1 {
+	font-family: 'Bold';
+}
+  
+p.p {
+	line-height:  18pt;
+ }
+ 
+li.li {
+	line-height:  18pt;
+}
+ 
+li.step {
+	margin-bottom: 5pt;
+}
+ 
+div.info {
+	padding-left:  	5pt;
+	border-left: 	4pt solid var(--gray600);
+	line-height:  	18pt;
+}
+ 
+p.procedure {
+	font-weight:  bold;
+}
+ 
+table.table {
+	width: 100%;
+}
+ 
+table caption {
+	margin-bottom: 	5pt;
+	text-align: 	left;
+}
+ 
+div.fig {
+	margin-top: 	10pt;
+	margin-bottom: 10pt;
+}
+ 
+span.notetitle {
+	font-weight: 	bold;
+}
+ 
+div.note {
+	padding:  			5pt;
+	background: 		var(--gray500);
+	border-radius: 		5pt;
+	line-height:  		18pt;
+}
+ 
 
