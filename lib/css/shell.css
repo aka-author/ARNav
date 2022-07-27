@@ -483,7 +483,7 @@ body {
 
 	#divTocFramelet {
 		position:		absolute;
-		z-index: 		-1;
+		z-index: 		1;
 		height:			var(--content-base-height);
 	}
 
@@ -501,6 +501,7 @@ body {
 
 	div.matterFramelet {
 		position: 	absolute;
+		z-index: 		1;
 		top: 		0pt;
 		left: 		0pt;
 		width:		100vw;
