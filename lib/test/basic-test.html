@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Debug</title>
+        <script src="../../prod/arnav.js"></script>
+        <script src="cfg.js"></script>
+
+    </head>
+    <body onload="GLOBAL_APP.run()" 
+          onunload="GLOBAL_APP.quit()">
+        <h1>Test</h1>
+        <h2>Local Storage</h2>
+        <p id="localStorage"></p>
+        <script>
+
+            console.log(GLOBAL_CFG);
+
+            let cfg = (new ArnavCfg()).loadDefaultProps(GLOBAL_CFG);
+            //console.log(cfg);
+
+            cfg.setProp("toc.framelet.yscroll", "корова собака לחילילי", "Orbi");
+
+            console.log('scroll ', cfg.getProp('toc.framelet.yscroll', "Orbi"));
+
+            let json = cfg.assembleJson();
+
+            console.log(json);
+
+            console.log(cfg.mutableProps);
+
+            saveToLocalStorage("testdoc", json);
+
+            cfg.unpackFromJson(loadFromLocalStorage("testdoc"));
+
+            console.log(">>", cfg.mutableProps);
+	
+
+
+            let msg = loadFromLocalStorage("arnavTest");
+            if(msg.length > 250) msg = "Beginning from the start.";
+            console.log(msg);
+            let p = document.getElementById("localStorage");
+            p.innerHTML = msg;
+            saveToLocalStorage("arnavTest", msg + " Hello LS!");
+            console.log(loadFromLocalStorage("arnavTest"));
+        </script>
+        <div id="tocArea" style="overflow-y: scroll; height: 100pt; background: #fff000;">
+            <div id="tocTree"></div>
+        </div>
+    </body>
+</html>
