@@ -1665,14 +1665,14 @@ class ArnavTocTree extends ArnavScrollArea {
         return this.getEntryInnerClassName(entry);
     }
 
-    getTitleInnerClassname(entry) {
+    /* getTitleInnerClassname(entry) {
 
         if(entry.hasWorkers()) {
             return this.isSelected(entry) ? tocTitleNodeInnerSelected : tocTitleNodeInner;
         } else {
             return this.isSelected(entry) ? tocTitleLeafInnerSelected : tocTitleLeafInner;
         }
-    }
+    } */
 
     getTitleOuterClassName(entry) {
 
