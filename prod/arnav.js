@@ -796,7 +796,7 @@ class ArnavBureaucrat {
 	}
 }/* * ** *** ***** ******** ************* ********************* 
  Product:	Active Reader Navigation Library
- Module:	usercfg.js                                 (\(\
+ Module:	cfg.js                                     (\(\
  Func:		Saving and loading user's configuration    (^.^)
 * * ** *** ***** ******** ************* *********************/
 	
@@ -845,6 +845,9 @@ class ArnavCfg {
 		this.mutableProps = {"sys": {}, "doc": {}};
 	}		
 
+
+	// Building a configuration object
+
 	createDefaultProp(propDto) {
 		return new ArnavCfgDefaultProp(propDto);
 	}
@@ -862,6 +865,9 @@ class ArnavCfg {
 		
 		return this;
 	}
+
+
+	// Accessing values of configuration properties 
 
 	existsDoc(docId) {
 		return !!this.mutableProps.doc[docId];
@@ -891,7 +897,6 @@ class ArnavCfg {
 	}
 
 	pokeMutableProp(propPath, propVal, docId=undefined) {
-		// asciiSafeEncode
 			
 		if(this.isDocMutable(propPath) && docId) {
 			this.checkDoc(docId);
@@ -913,7 +918,7 @@ class ArnavCfg {
 			if(this.isSysMutable(propPath))
 				propVal = useful(this.mutableProps.sys[docId][propPath], "");;
 		}
-		// asciiSafeDecode
+		
 		return propVal;
 	}
 
@@ -924,6 +929,9 @@ class ArnavCfg {
 	getDefaultPropContent(propPath) {
 		return this.existsDefaultProp(propPath) ? this.getDefaultProp(propPath).getContent() : "";
 	}
+
+
+	// Setting and getting values of configuration properties 
 
 	setProp(propPath, propVal, docId=undefined) {
 		if(this.isMutable(propPath)) 
@@ -937,7 +945,7 @@ class ArnavCfg {
 	}
 		
 
-	// Saving and loading mutable properties
+	// Saving and loading values of mutable configuraation properties
 
 	assembleJson() {		
 		return JSON.stringify(this.mutableProps);
@@ -957,21 +965,9 @@ class ArnavCfg {
 			parseSuccess = false;
 		}			
 				
-		if(parseSuccess) {
-
+		if(parseSuccess) 
 			this.mutableProps = props;
-					
-			/*
-			for(let propName in props.sys) 
-				this.pokeCfgParam(CFG_SYS_PARAMS, paramName, params.sys[paramName]);
-				
-			for(let docId in params.doc) 
-				for(let paramName in params.doc[docId]) 
-					this.pokeCfgParam(docId, paramName, params.doc[docId][paramName]); */
-		}
-				
-		console.log("::", props);
-
+						
 		return parseSuccess;
 	}
 
@@ -1498,18 +1494,19 @@ class ArnavDoc extends ArnavBureaucrat {
 	}
 
 	createEntryOfDto(chief, entryDto) {
-		return new ArnavTocEntry(chief, entryDto.id, entryDto.title, entryDto.uri);
+		return new ArnavTocEntry(chief, entryDto.entry['@id'], 
+									entryDto.entry['@title'], entryDto.entry['@uri']);
 	}
 
 	extractTocEntriesFromDto(dto) {
-		return dto.toc.entries;
+		return dto["entries"];
 	}
 
 	loadEntryFromDto(chief, entryDto) {
 		let entry = this.createEntryOfDto(chief, entryDto);
 		this.entriesByUri[entry.getUri] = entry; 
-		if(entryDto.entries)
-			this.loadEntriesFromDto(entry, entryDto.entries);
+		if(entryDto.entry.entries)
+			this.loadEntriesFromDto(entry, entryDto.entry.entries);
 		return entry;	
 	}
 
@@ -1520,10 +1517,10 @@ class ArnavDoc extends ArnavBureaucrat {
 	}
 
 	loadFromDto(dto) {
-		this.id = dto.id;
-		this.title = dto.title;
+		this.id = dto["entry"]["@id"];
+		this.title = dto["entry"]["@title"];
 		this.entriesByUri = {};
-		this.loadEntriesFromDto(this, this.extractTocEntriesFromDto(dto)); 
+		this.loadEntriesFromDto(this, this.extractTocEntriesFromDto(dto["entry"])); 
 	}
 	
 	getEntries() {
@@ -1613,27 +1610,31 @@ class ArnavTocTree extends ArnavScrollArea {
     // Assembling class names and lists
 
     getSelectedClassName(entry) {
-        return entry.hasWorkers() ? "tocTitleNodeSelected" : "tocTitleLeafSelected";
+        return entry.hasWorkers() ? 
+                    this.getCfg().getProp("toc.tree.classTitleNodeSelected") : 
+                    this.getCfg().getProp("toc.tree.classTitleLeafSelected");
     }
 
     getLevelClassName(entry) {
-        return "tocLevel" + entry.getLevel();
+        return this.getCfg().getProp("toc.tree.classLevelPrefix") + entry.getLevel();
     }
 
     getLabelClassName(entry) {
-        return "tocLabel";
+        return this.getCfg().getProp("toc.tree.classLabel");
     }
 
     getEntryOuterClassName(entry) {
-        return "tocEntryOuter";
+        return this.getCfg().getProp("toc.tree.classEntryOuter");
     }
 
     getEntryTitleClassName(entry) {
-        return entry.hasWorkers() ? "tocEntryTitleNode" : "tocEntryTitleLeaf";
+        return entry.hasWorkers() ? 
+                this.getCfg().getProp("toc.tree.classEntryTitleNode") : 
+                this.getCfg().getProp("toc.tree.classEntryTitleLeaf");
     }
 
     getEntryInnerClassName(entry) {
-        return "tocEntryInner";
+        return this.getCfg().getProp("toc.tree.classEntryInner");
     }
 
     assembleEntryOuterClassRefs(entry) {
@@ -1641,11 +1642,11 @@ class ArnavTocTree extends ArnavScrollArea {
     }
 
     assembleOpenBoxClassRefs() {
-        return "tocOpenBox";
+        return this.getCfg().getProp("toc.tree.classOpenBox");
     }
 
     assembleCloseBoxClassRefs() {
-        return "tocOpenBox";
+        return this.getCfg().getProp("toc.tree.classOpenBox");
     }
 
     assembleTitleLabelClassRefs(entry) {
@@ -1676,16 +1677,20 @@ class ArnavTocTree extends ArnavScrollArea {
     getTitleOuterClassName(entry) {
 
         if(entry.hasWorkers()) {
-            return this.isSelected(entry) ? "tocTitleNodeSelected" : "tocTitleNode";
+            return this.isSelected(entry) ? 
+                    this.getCfg().getProp("toc.tree.classEntryTitleNode") : 
+                    this.getCfg().getProp("toc.tree.classTitleNode");
         } else {
-            return this.isSelected(entry) ? "tocTitleLeafSelected" : "tocTitleLeaf";
+            return this.isSelected(entry) ? 
+                    this.getCfg().getProp("toc.tree.classEntryTitleLeaf") : 
+                    this.getCfg().getProp("toc.tree.classTitleLeaf");
         }
     }
 
 
-    assembleTocClassRefs() {
+    /*assembleTocClassRefs() {
         return "tocTree";
-    }
+    }*/
 
 	// Assembling DOM objects for a TOC
 
@@ -1708,7 +1713,7 @@ class ArnavTocTree extends ArnavScrollArea {
         let id = entry.getId();
         let imgIcon = document.createElement("img");
         imgIcon.setAttribute("id", this.getOpenBoxIconId(id));
-        imgIcon.setAttribute("src", "front/img/black_arrow_right.svg");
+        imgIcon.setAttribute("src", this.getCfg().getProp('toc.tree.srcImgOpen'));
         return imgIcon;
     }
 
@@ -1730,7 +1735,7 @@ class ArnavTocTree extends ArnavScrollArea {
         let id = entry.getId();
         let imgIcon = document.createElement("img");
         imgIcon.setAttribute("id", this.getCloseBoxIconId(id));
-        imgIcon.setAttribute("src", "front/img/black_arrow_drop_down.svg");
+        imgIcon.setAttribute("src", this.getCfg().getProp('toc.tree.srcImgClose'));
         return imgIcon;
     }
 
@@ -1787,7 +1792,7 @@ class ArnavTocTree extends ArnavScrollArea {
 		let tDiv = document.createElement("div");
 
         let iDiv = document.createElement("div");
-        iDiv.setAttribute("class", "tocInner");
+        iDiv.setAttribute("class", this.getCfg().getProp("toc.tree.classInner"));
 
         let entries = this.getModel().getEntries();
 		for(let i in entries)
