@@ -1382,6 +1382,7 @@ class ArnavControl extends ArnavBureaucrat {
 	goToBack() {
 		this.getChief().bringToBack(this);
 	}
+
 }/* * ** *** ***** ******** ************* ********************* 
  Product:	Active Reader Navigation Library
  Module:	area.js                              (\(\
@@ -2298,6 +2299,95 @@ class ArnavBurger extends ArnavControl {
         issue.terminate();
         
         return this.isPaneVisible() ? this.hidePane() : this.showPane();
+    }
+
+}/* * ** *** ***** ******** ************* *********************
+ Product:	Active Reader Navigation Library
+ Module:    strip.js                                   (\(\
+ Func:		Managing an HTML strip and inner matter    (^.^)
+* * ** *** ***** ******** ************* *********************/
+
+class ArnavHtmlStrip extends ArnavControl {
+
+    constructor(chief, id) {
+        super(chief, id);
+        this.setupFigureImgs();
+    }
+
+    getFigureImgs() {
+        return this.figureImgs;
+    }
+
+    createFigureImg(domImg) {
+        return new ArnavFigureImg(this, domImg.id);
+    }
+
+    setupFigureImgs() {
+
+        this.figureImgs = [];
+
+        let domImgs = this.getDomObject().getElementsByTagName("img");
+
+        for(let domImg of domImgs)
+            this.figureImgs.push(this.createFigureImg(domImg).bindDomObject());
+    }
+
+    adjustLargeImgs() {
+
+        for(let figImg of this.getFigureImgs())
+            figImg.adjustWidth();
+
+        return this;
+    }
+
+
+}/* * ** *** ***** ******** ************* *********************
+ Product:	Active Reader Navigation Library
+ Module:    figimg.js                                 (\(\
+ Func:		Displaying an image in an HTML strip      (^.^)
+* * ** *** ***** ******** ************* *********************/
+
+class ArnavFigureImg extends ArnavControl {
+
+    constructor(chief, id) {
+        super(chief, id);
+        this.originalWidth = this.getWidth();
+    }
+
+    getMaxWidth() {
+        return this.getChief().getWidth() - this.getLeft();
+    }
+
+    getOriginalWidth() {
+        return this.originalWidth;
+    }
+    
+    isLarge() {
+        return this.getOriginalWidth() > this.getMaxWidth();
+    }
+
+    adjustWidth() {
+        this.setWidth(this.getMaxWidth());
+        this.getDomObject().style.cursor = "zoom-in";
+        this.adjusted = true;
+        return this;
+    }
+
+    restoreOriginalWidth() {
+        this.setWidth(this.getOriginalWidth());
+        this.getDomObject().style.cursor = "zoom-out";
+        return this;
+    }   
+
+    handle__click(issue) {
+        
+        if(this.adjusted) { 
+            this.restoreOriginalWidth(); 
+            this.adjusted = false;
+        } else 
+            this.adjustWidth();
+
+        issue.terminate();
     }
 
 }/* * ** *** ***** ******** ************* ********************* 
