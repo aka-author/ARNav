@@ -2272,6 +2272,8 @@ class ArnavBurger extends ArnavControl {
         super(chief, id);
         this.paneVisible = false;
         this.pane = pane;
+        this.iconFolded = document.getElementById(this.getId() + "ImgFolded");
+        this.iconUnfolded = document.getElementById(this.getId() + "ImgUnfolded");
     }
 
     getPane() {
@@ -2294,11 +2296,35 @@ class ArnavBurger extends ArnavControl {
         return this.paneVisible;
     }
 
+    getIconFolded() {
+        return this.iconFolded;
+    }
+
+    getIconUnfolded() {
+        return this.iconUnfolded;
+    }
+
+    showFolded() {
+        this.getIconFolded().style.display = "";
+        this.getIconUnfolded().style.display = "none";
+    }
+
+    showUnfolded() {  
+        this.getIconFolded().style.display = "none";
+        this.getIconUnfolded().style.display = "";
+    }
+
     handle__click(issue) {
 
         issue.terminate();
         
-        return this.isPaneVisible() ? this.hidePane() : this.showPane();
+        if(this.isPaneVisible()) {
+            this.hidePane();
+            this.showFolded();
+        } else {
+            this.showPane()
+            this.showUnfolded();
+        };
     }
 
 }/* * ** *** ***** ******** ************* *********************
@@ -2307,7 +2333,7 @@ class ArnavBurger extends ArnavControl {
  Func:		Managing an HTML strip and inner matter    (^.^)
 * * ** *** ***** ******** ************* *********************/
 
-class ArnavHtmlStrip extends ArnavControl {
+class ArnavStrip extends ArnavControl {
 
     constructor(chief, id) {
         super(chief, id);
