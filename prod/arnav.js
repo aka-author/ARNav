@@ -1611,7 +1611,7 @@ class ArnavTocTree extends ArnavScrollArea {
     // Assembling class names and lists
 
     getSelectedClassName(entry) {
-        return entry.hasWorkers() ? 
+        return entry.hasWorkers() ?                 
                     this.getCfg().getProp("toc.tree.classTitleNodeSelected") : 
                     this.getCfg().getProp("toc.tree.classTitleLeafSelected");
     }
@@ -1656,42 +1656,28 @@ class ArnavTocTree extends ArnavScrollArea {
         return classRefs.join(" ");
     }
 
-    assembleTitleBlockClassRefs(entry) {
-        let classRefs = [];//[this.getEntryTitleClassName(entry), this.getLevelClassName(entry)];
+    /*assembleTitleBlockClassRefs(entry) {
+        let classRefs = [];
         if(this.isSelected(entry)) classRefs.push(this.getSelectedClassName(entry));
         return classRefs.join(" ");
-    }
+    }*/
 
     assembleEntryInnerClassRefs(entry) {
         return this.getEntryInnerClassName(entry);
     }
 
-    /* getTitleInnerClassname(entry) {
-
-        if(entry.hasWorkers()) {
-            return this.isSelected(entry) ? tocTitleNodeInnerSelected : tocTitleNodeInner;
-        } else {
-            return this.isSelected(entry) ? tocTitleLeafInnerSelected : tocTitleLeafInner;
-        }
-    } */
-
     getTitleOuterClassName(entry) {
 
         if(entry.hasWorkers()) {
             return this.isSelected(entry) ? 
-                    this.getCfg().getProp("toc.tree.classEntryTitleNode") : 
+                    this.getCfg().getProp("toc.tree.classTitleNodeSelected") : 
                     this.getCfg().getProp("toc.tree.classTitleNode");
         } else {
             return this.isSelected(entry) ? 
-                    this.getCfg().getProp("toc.tree.classEntryTitleLeaf") : 
+                    this.getCfg().getProp("toc.tree.classTitleLeafSelected") : 
                     this.getCfg().getProp("toc.tree.classTitleLeaf");
         }
     }
-
-
-    /*assembleTocClassRefs() {
-        return "tocTree";
-    }*/
 
 	// Assembling DOM objects for a TOC
 
@@ -2127,7 +2113,7 @@ class ArnavConsole extends ArnavControl {
     }
 
     getSmartphoneWidth() {
-        return 560;
+        return 600;
     }
 
     isSmartphone() {
@@ -2147,117 +2133,50 @@ class ArnavConsole extends ArnavControl {
         return fmlt ? fmlt.isFolded() : undefined;
     }
 
-    tileFramelets() {
-        // TBD        
+    beforeTileFramelets() {
+        // abstract
     }
 
-    stretchFramelets() {
+    tileFrameletsTask() {
+        /* TBD */
+    }
 
-        this.tocFramelet = this.getWorkerById("divTocFramelet");
-        this.matterFramelet = this.getWorkerById("divMatterFramelet");
+    afterTileFramelets() {
+        // abstract
+    }
 
-        if(this.isSmartphone()) {
-            this.tocFramelet.maximize();
-            this.matterFramelet.maximize();
-            this.smartphone = true;
-        }
-
-        if(!this.isSmartphone() && this.smartphone) {
-            this.tocFramelet.setLeft(this.getHorizontalPadding()).setWidth(300);
-            this.matterFramelet.setLeft(this.tocFramelet.getRight() + this.getHorizontalPadding());
-            this.matterFramelet.setTop(this.getVerticalPadding());
-            this.matterFramelet.setRight(this.getRight() - this.getHorizontalPadding());
-            this.matterFramelet.setBottom(this.getBottom()- this.getVerticalPadding());
-            this.smartphone = false;
-        }
-
-        if(!this.tocFramelet.isFolded())
-            this.tocFramelet.setBottom(this.getHeight() - this.getVerticalPadding() - 20);
-        
-        if(this.matterFramelet.isMaximized() || this.isSmartphone()) {
-            this.matterFramelet.setRight(this.getWidth());
-            this.matterFramelet.setBottom(this.getHeight());
-        } else {
-            this.matterFramelet.setRight(this.getWidth() - this.getHorizontalPadding());
-            this.matterFramelet.setBottom(this.getHeight() - this.getVerticalPadding());    
-        }
+    tileFramelets() {
+        this.beforeTileFramelets();
+        this.tileFrameletsTask();
+        this.afterTileFramelets();
+        return this;        
     }
 
     handle__fold(issue) {
-     
         issue.terminate();
-
         issue.getPayload().fold();
-
-        this.matterFramelet = this.getWorkerById("divMatterFramelet");
-        this.matterFramelet.maximize();
-
-        this.getApp().shortcut.show();
     }
 
     handle__unfold(issue) {
-
         issue.terminate();
-
         issue.getPayload().unfold();
         issue.getSender().hide();
-
-        this.matterFramelet = this.getWorkerById("divMatterFramelet");
-        this.matterFramelet.demaximize();
-
-        this.stretchFramelets();
     }
 
     handle__mouseup(issue) {
-    
-        if(this.resizing) {            
-            this.resizing = false;
-
-            let sizes = {}; 
-            sizes.toc = this.tocFramelet.getSize();
-            sizes.matter = this.matterFramelet.getSize(); 
-
-            issue.convert("frameletsResized", sizes);
-        }
+        // TBD
     }
 
     handle__mousedown(issue) {
-        this.resizing = true;
-        this.startX = issue.getPayload().pageX;
+        // TBD
     }
 
     handle__mousemove(issue) {
-
-        this.tocFramelet = this.getWorkerById("divTocFramelet");
-        this.matterFramelet = this.getWorkerById("divMatterFramelet");
-
-        if(this.resizing) {
-            let x = issue.getPayload().pageX;
-            let delta = x - this.startX; 
-            this.tocFramelet.resizeRight(delta);
-            this.matterFramelet.resizeLeft(delta);
-            this.startX = x;
-        } else {
-            let x = issue.getPayload().offsetX;
-            if(this.tocFramelet.getRight() < x && x < this.matterFramelet.getLeft())
-                this.getDomObject().style.cursor = "col-resize";
-            else 
-                this.getDomObject().style.cursor = ""; 
-        }
+        // TBD
     }
 
     handle__resize(issue) {
-        
-        this.tocFramelet = this.getWorkerById("divTocFramelet");
-        this.matterFramelet = this.getWorkerById("divMatterFramelet");
-
-        this.stretchFramelets();
-
-        let sizes = {}; 
-        sizes.toc = this.tocFramelet.getSize();
-        sizes.matter = this.matterFramelet.getSize(); 
-
-        issue.convert("frameletsResized", sizes);
+        // TBD
     }
 
 }/* * ** *** ***** ******** ************* ********************* 
