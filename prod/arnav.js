@@ -1656,12 +1656,6 @@ class ArnavTocTree extends ArnavScrollArea {
         return classRefs.join(" ");
     }
 
-    /*assembleTitleBlockClassRefs(entry) {
-        let classRefs = [];
-        if(this.isSelected(entry)) classRefs.push(this.getSelectedClassName(entry));
-        return classRefs.join(" ");
-    }*/
-
     assembleEntryInnerClassRefs(entry) {
         return this.getEntryInnerClassName(entry);
     }
