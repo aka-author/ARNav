@@ -1005,6 +1005,19 @@ class ArnavCfg {
  Func:      Managing DOM objects                     (^.^)
 * * ** *** ***** ******** ************* *********************/
 
+class ArnavSize {
+
+	constructor(left=0, top=0, width=0, height=0, maximized=false, folded=false) {
+		this.left = left;
+		this.top = top;
+		this.width = width;
+		this.height = height;
+		this.maximized = maximized;
+		this.folded = folded;
+	}
+}
+
+
 class ArnavControl extends ArnavBureaucrat {
 	
 	constructor(chief, id) {
@@ -1014,7 +1027,9 @@ class ArnavControl extends ArnavBureaucrat {
 		this.assignType(ARNAV_TYPE_CONTROL);			
 		this.domObjectValue = this.getDomObjectValue();
 		this.controlValue = this.domObject ? this.getControlValue() : null;
+		this.normalSize = this.createSize();
 		this.maximized = false;
+		this.folded = false;
 	}
 
 	getDomObject() {
@@ -1086,6 +1101,7 @@ class ArnavControl extends ArnavBureaucrat {
 		if(this.checkDomObject()) {
 			this.implantDom(this.assembleDom());
 			this.subscribeOnDomEvents();
+			this.saveNormalSize();
 		}
 
 		return this;
@@ -1156,6 +1172,23 @@ class ArnavControl extends ArnavBureaucrat {
 		this.getDomObject().style.display = "none";
 	}
 
+	getLeft() {
+        let domObject = this.getDomObject();
+        return domObject ? domObject.offsetLeft : undefined;
+    }
+
+    setLeft(pxLeft) {
+
+        if(this.checkDomObject()) {
+			console.log(pxLeft);
+            let domObject = this.getDomObject();
+            domObject.style.left = pxLeft + "px";
+			console.log(this.getLeft());
+        }
+
+        return this;
+    }
+
 	getTop() {
         let domObject = this.getDomObject();
         return domObject ? domObject.offsetTop : undefined;
@@ -1171,22 +1204,9 @@ class ArnavControl extends ArnavBureaucrat {
         return this;    
     }
 
-    getLeft() {
+    getRight() {
         let domObject = this.getDomObject();
-        return domObject ? domObject.offsetLeft : undefined;
-    }
-
-    setLeft(pxLeft) {
-
-        if(this.checkDomObject()) {
-			console.log(pxLeft);
-            let domObject = this.getDomObject();
-            domObject.style.left = pxLeft + "px";
-			//domObject.style.left = "200px";
-			console.log(this.getLeft());
-        }
-
-        return this;
+        return domObject ? domObject.offsetLeft + domObject.clientWidth : undefined;
     }
 
 	setRight(pxRight) {
@@ -1194,10 +1214,15 @@ class ArnavControl extends ArnavBureaucrat {
 		return this;
 	}
 
-	getRight() {
+	getBottom() {
         let domObject = this.getDomObject();
-        return domObject ? domObject.offsetLeft + domObject.clientWidth : undefined;
+        return domObject ? domObject.offsetTop + domObject.clientHeight : undefined;
     }
+
+	setBottom(pxBottom) {
+		this.resizeBottom(pxBottom - this.getBottom());
+		return this;
+	}
 
     getWidth() {
         let domObject = this.getDomObject();
@@ -1229,34 +1254,6 @@ class ArnavControl extends ArnavBureaucrat {
         return this;    
     }
 
-	setBottom(pxBottom) {
-		this.resizeBottom(pxBottom - this.getBottom());
-		return this;
-	}
-
-	getBottom() {
-        let domObject = this.getDomObject();
-        return domObject ? domObject.offsetTop + domObject.clientHeight : undefined;
-    }
-
-	resizeBottom(pxDelta) {
-
-		let currHeight = this.getHeight();
-		let newHeight = currHeight + pxDelta;
-
-		this.setHeight(newHeight);
-
-		return this;
-	}
-
-	getInnerWidth() {
-		return this.getWidth();
-	}
-
-	getInnerHeight() {
-		return this.getHeight();
-	}
-
 	resizeLeft(pxDelta) {
 
 		let currLeft = this.getLeft();
@@ -1279,18 +1276,102 @@ class ArnavControl extends ArnavBureaucrat {
 		return this;
 	}
 
-	maximize() {
-		let chief = this.getChief();
-		this.normalSize = this.getSize();
-		this.setLeft(0).setTop(0).setWidth(chief.getInnerWidth()).setHeight(chief.getInnerHeight());
-		this.maximized = true;
+	resizeBottom(pxDelta) {
+
+		let currHeight = this.getHeight();
+		let newHeight = currHeight + pxDelta;
+
+		this.setHeight(newHeight);
+
 		return this;
 	}
 
-	demaximize() {
-		this.setSize(this.normalSize);
-		console.log(this.normalSize);
-		this.maximized = false;
+	stratch() {
+		let chief = this.getChief();
+		this.setSize4(0, 0, chief.getInnerWidth(), chief.getInnerHeight());
+	}
+
+	getInnerWidth() {
+		return this.getWidth();
+	}
+
+	getInnerHeight() {
+		return this.getHeight();
+	}
+
+	createSize(left=0, top=0, width=0, height=0, maximized=false, folded=false) {
+		return new ArnavSize(left, top, width, height, maximized, folded);
+	}
+
+	getSize() {
+		return this.createSize(this.getLeft(), this.getTop(), 
+							   this.getWidth(), this.getHeight(),
+			                   this.isMaximized(), this.isFolded());
+	}
+
+	setSize(size) {
+		return this.setTop(size.top).setLeft(size.left).setWidth(size.width).setHeight(size.height);
+	}
+
+	setSize4(left, top, width, height) {
+		return this.setSize(this.createSize(left, top, width, height));
+	}
+
+	isNormalized() {
+		return !this.isMaximized() && !this.isFolded();
+	}
+
+	getNormalSize() {
+		return this.normalSize;
+	}
+
+	setNormalSize(size) {
+		this.normalSize = size;
+	}
+
+	saveNormalSize() {
+		if(this.isNormalized()) this.normalSize = this.getSize();
+	}
+
+	getNormalLeft() {
+		return this.getNormalSize().left;
+	}
+
+	getNormalTop() {
+		return this.getNormalSize().top;
+	}
+
+	getNormalWidth() {
+		return this.getNormalSize().width;
+	}
+
+	getNormalHeight() {
+		return this.getNormalSize().height;
+	}
+
+	beforeNormalize() {
+
+	}
+
+	normalizeTask() {
+		if(this.isFolded()) this.show();
+		this.setSize(this.getNormalSize());
+	}
+
+	afterNormalize() {
+
+	}
+
+	normalize() {
+
+		if(!this.isNormalized()) {
+			this.beforeNormalize();
+			this.normalizeTask();
+			this.afterNormalize();	
+			this.maximized = false;
+			this.folded = false;
+		}
+
 		return this;
 	}
 
@@ -1298,28 +1379,55 @@ class ArnavControl extends ArnavBureaucrat {
 		return this.maximized;
 	}
 
-	setSize(size) {
-		return this.setTop(size.top).setLeft(size.left).setWidth(size.width).setHeight(size.height);
+	beforeMaximize() {
+
 	}
 
-	getSize() {
-		return {"left": this.getLeft(), "top": this.getTop(), "width": this.getWidth(), "height": this.getHeight()}
+	maximizeTask() {
+		this.stratch();
 	}
 
-	pushSize() {
-		if(!this.sizes) this.sizes = [];
-		console.log(this.getSize());
-		this.sizes.push(this.getSize());
+	afterMaximize() {
+
+	}
+
+	maximize() {
+
+		if(!this.isMaximized()) {
+			this.saveNormalSize();
+			this.beforeMaximize();
+			this.maximizeTask();
+			this.afterMaximize();
+			this.maximized = true;
+		}
+
 		return this;
 	}
 
-	popSize() {
+	isFolded() {
+		return this.folded;
+	}
 
-		if(!!this.sizes) {
-			let size = this.sizes[this.sizes.length - 1];
-			console.log("Pop: ", size);
-			this.setSize(size);
-			delete this.sizes[this.sizes.length - 1];
+	beforeFold() {
+
+	}
+
+	foldTask() {
+		this.hide();
+	}
+
+	afterFold() {
+
+	}
+
+	fold() {
+
+		if(!this.isFolded()) {
+			this.saveNormalSize();
+			this.beforeFold();
+			this.foldTask();
+			this.afterFold();
+			this.folded = true;
 		}
 
 		return this;
@@ -1377,12 +1485,18 @@ class ArnavControl extends ArnavBureaucrat {
 
 	goToFront() {
 		this.getChief().bringToFront(this);
+		return this;
 	}
 
 	goToBack() {
 		this.getChief().bringToBack(this);
+		return this;
 	}
 
+	handle__resize(issue) {
+		if(this.isMaximized())
+			this.stratch();
+	}
 }/* * ** *** ***** ******** ************* ********************* 
  Product:	Active Reader Navigation Library
  Module:	area.js                              (\(\
@@ -1928,9 +2042,6 @@ class ArnavTocTreeSinglePage extends ArnavTocTree {
  Func:      Managing a framelet                       (^.^)
 * * ** *** ***** ******** ************* *********************/
 
-const FRLT_STATE_FOLDED   = "folded";
-const FRLT_STATE_UNFOLDED = "unfolded";
-
 class ArnavFrameletHeaderFoldBox extends ArnavControl {
 
     handle__click(issue) {
@@ -1958,16 +2069,20 @@ class ArnavFrameletHeader extends ArnavControl {
 }
 
 
+class ArnavFrameletPane extends ArnavControl {
+
+
+}
+
+
 class ArnavFramelet extends ArnavControl {
 
-    constructor(chiefConsole, id, initialState) {
-
+    constructor(chiefConsole, id, initialState=undefined) {
         super(chiefConsole, id);
-        
         this.assignType(ARNAV_TYPE_FRAMELET);
-        
         this.folded = initialState;
-        this.header = this.createHeader();
+        this.pane = this.createPane().bindDomObject();
+        this.shortcut = null;
     }
 
     setTitle(title) {
@@ -1979,44 +2094,57 @@ class ArnavFramelet extends ArnavControl {
         return this.title;
     }
 
-    assembleHeaderId(frameletId) {
-        return frameletId + "Header";
+    hasShortcut() {
+        return !!this.shortcut;
     }
 
-    createHeader() {
-        let headerId = this.assembleHeaderId(this.getId());
-        return checkElementById(headerId) ? new ArnavFrameletHeader(this, headerId) : null;
-    }
-
-    isFolded() {
-        return this.folded == FRLT_STATE_FOLDED;
-    }
-
-    fold() {
-
-        if(!this.isFolded()) {
-            this.folded = FRLT_STATE_FOLDED;
-            this.pushSize();
-            console.log("Folding: ", this.sizes);
-            this.hide();
-        }
-
+    setShortcut(shortcut) {
+        this.shortcut = shortcut;
         return this;
     }
 
-    unfold() {
+    getShortcut() {
+        return this.shortcut;
+    }
 
-        if(this.isFolded()) {
-            this.folded = FRLT_STATE_UNFOLDED;
-            this.show();
-            console.log("Unfolding: ", this.sizes);
-            this.popSize();
-        }
-
+    showShortcut() {
+        if(this.hasShortcut()) this.getShortcut().show();
         return this;
+    }
+
+    hideShortcut() {
+        if(this.hasShortcut()) this.getShortcut().hide();
+        return this;
+    }
+
+    assemblePaneId(frameletId) {
+        return frameletId + "Pane";
+    }
+
+    createPane() {
+        let paneId = this.assemblePaneId(this.getId());
+        return checkElementById(paneId) ? new ArnavFrameletPane(this, paneId) : null;
+    }
+
+    getPane() {
+        return this.pane;
+    }
+
+    normalizeTask() {
+        this.hideShortcut();
+        super.normalizeTask();
+    }
+
+    foldTask() {
+        super.foldTask();
+        this.showShortcut();
     }
 
     handle__fold(issue) {
+        // The issue is still "fold", but we change the payload. 
+        // The console will receive this issue and fold the framelet.
+        // That's because the console may have more ideas what else 
+        // to do before or after folding the frmelet.
         issue.convert("fold", this);
     }
 
@@ -2074,6 +2202,56 @@ class ArnavFramelet extends ArnavControl {
 
 }
 
+
+class ArnavHeadedFramelet extends ArnavFramelet {
+
+    constructor(chiefConsole, id, initialState) {
+        super(chiefConsole, id, initialState);
+        this.header = this.createHeader().bindDomObject();
+    }
+
+    assembleHeaderId(frameletId) {
+        return frameletId + "Header";
+    }
+
+    createHeader() {
+        let headerId = this.assembleHeaderId(this.getId());
+        return checkElementById(headerId) ? new ArnavFrameletHeader(this, headerId) : null;
+    }
+
+    getHeader() {
+        return this.header;
+    }
+
+    showHeader() {
+        let header = this.getHeader();
+        if(header) header.show();
+        return this;
+    }
+
+    hideHeader() {
+        let header = this.getHeader();
+        if(header) header.hide();
+        return this;
+    }
+
+    beforeNormalize() {
+        this.showHeader();
+        this.getPane().setTop(this.getHeader().getNormalHeight());
+    }
+
+    maximizeTask() {
+        this.hideHeader();
+        super.maximizeTask();
+        this.getPane().maximize();
+    }
+
+}
+
+
+class ArnavHeadlessFramelet extends ArnavFramelet {
+
+}
 /* * ** *** ***** ******** ************* ********************* 
  Product:	Active Reader Navigation Library
  Module:	console.js                               (\(\
@@ -2085,7 +2263,7 @@ class ArnavFrameletShortcut extends ArnavControl {
     constructor(chiefConsole, id, framelet) {
         super(chiefConsole, id);
         this.assignType(ARNAV_TYPE_SHORTCUT);
-        this.framelet = framelet;
+        this.framelet = framelet.setShortcut(this);
     }
 
     getTitle() {
@@ -2153,7 +2331,7 @@ class ArnavConsole extends ArnavControl {
 
     handle__unfold(issue) {
         issue.terminate();
-        issue.getPayload().unfold();
+        issue.getPayload().normalize();
         issue.getSender().hide();
     }
 
