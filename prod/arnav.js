@@ -786,9 +786,16 @@ class ArnavBureaucrat {
 		return e.type;
 	}
 
+	isDomEventValid(e) {
+		return e.detail != "dummy";
+	}
+
 	edom(e) {
-		//e.stopPropagation();
-		this.resolve(this.createIssue(this.mapDomEventType(e), e).setSender(this));
+		if(this.isDomEventValid(e)) {
+			this.getDomObject().dispatchEvent(new CustomEvent(e.type, {"detail": "dummy"}));		
+			e.stopPropagation();
+			this.resolve(this.createIssue(this.mapDomEventType(e), e).setSender(this));
+		}
 	}
 
 	sendIssue(issue, bureaucrat) {
@@ -1180,10 +1187,8 @@ class ArnavControl extends ArnavBureaucrat {
     setLeft(pxLeft) {
 
         if(this.checkDomObject()) {
-			console.log(pxLeft);
             let domObject = this.getDomObject();
             domObject.style.left = pxLeft + "px";
-			console.log(this.getLeft());
         }
 
         return this;
@@ -1349,18 +1354,14 @@ class ArnavControl extends ArnavBureaucrat {
 		return this.getNormalSize().height;
 	}
 
-	beforeNormalize() {
-
-	}
+	beforeNormalize() {}
 
 	normalizeTask() {
 		if(this.isFolded()) this.show();
 		this.setSize(this.getNormalSize());
 	}
 
-	afterNormalize() {
-
-	}
+	afterNormalize() {}
 
 	normalize() {
 
@@ -1379,26 +1380,24 @@ class ArnavControl extends ArnavBureaucrat {
 		return this.maximized;
 	}
 
-	beforeMaximize() {
-
-	}
+	beforeMaximize() {}
 
 	maximizeTask() {
 		this.stratch();
 	}
 
-	afterMaximize() {
-
-	}
+	afterMaximize() {}
 
 	maximize() {
 
 		if(!this.isMaximized()) {
+			if(this.isFolded()) this.normalize();
 			this.saveNormalSize();
 			this.beforeMaximize();
 			this.maximizeTask();
 			this.afterMaximize();
 			this.maximized = true;
+			this.folded = false;
 		}
 
 		return this;
@@ -1408,17 +1407,13 @@ class ArnavControl extends ArnavBureaucrat {
 		return this.folded;
 	}
 
-	beforeFold() {
-
-	}
+	beforeFold() {}
 
 	foldTask() {
 		this.hide();
 	}
 
-	afterFold() {
-
-	}
+	afterFold() {}
 
 	fold() {
 
@@ -1427,6 +1422,7 @@ class ArnavControl extends ArnavBureaucrat {
 			this.beforeFold();
 			this.foldTask();
 			this.afterFold();
+			this.maximized = false;
 			this.folded = true;
 		}
 
@@ -1524,7 +1520,7 @@ class ArnavScrollArea extends ArnavControl {
 
 class ArnavPage extends ArnavControl {
 
-    constructor(chief, id) {
+    constructor(chief, id="BODYPAGE") {
         super(chief, id);
         this.page = this;
     }
@@ -2054,7 +2050,7 @@ class ArnavFrameletHeader extends ArnavControl {
 
     constructor(chiefFrameletHeader, id) {
         super(chiefFrameletHeader, id);
-        this.foldBox = this.createFoldBox();
+        this.foldBox = this.createFoldBox().bindDomObject();
     }
 
     assembleFoldBoxId(frameletHeaderId) {
@@ -2064,7 +2060,7 @@ class ArnavFrameletHeader extends ArnavControl {
     createFoldBox() {
         let foldBoxId = this.assembleFoldBoxId(this.getId()); 
         return checkElementById(foldBoxId) ? 
-            (new ArnavFrameletHeaderFoldBox(this, foldBoxId)).bindDomObject() : null;
+            (new ArnavFrameletHeaderFoldBox(this, foldBoxId)) : null;
     }
 }
 
@@ -2148,58 +2144,6 @@ class ArnavFramelet extends ArnavControl {
         issue.convert("fold", this);
     }
 
-    handle__resize(issue) {
-        // console.log(issue);
-    }
-
-    handle__mousedown__(issue) {
-        console.log("Start");
-        this.dragging = true;
-        this.getDomObject().style.userSelect = "none";
-        issue.terminate();
-    }
-
-    handle__shuher(issue) {
-        this.shuher = true;
-        this.getDomObject().style.cursor = "col-resize";
-        issue.terminate();
-
-    }
-
-    handle__unshuher(issue) {
-        this.shuher = false;
-        issue.terminate();
-
-    }
-
-    handle__mouseout__(issue) {
-        issue.convert("unshuher");
-    }
-
-    handle__mousemove__(issue) {
-        
-        let d = this.getDomObject().offsetLeft - issue.getPayload().clientX;
-        if(Math.abs(d) <= 3 && !this.shuher) {
-            issue.convert("shuher");
-            console.log(issue);
-        } else {
-            if(this.dragging) {
-                console.log("Move", issue.getPayload().clientX);
-                this.getDomObject().style.position = "absolute";
-                this.getDomObject().style.left = issue.getPayload().clientX + "px";
-                this.getDomObject().style.width -= 
-                issue.terminate();
-
-            }
-
-            if(this.shuher) {
-                issue.convert("unshuher");
-                console.log(issue);
-            }
-        }
-            
-    }
-
 }
 
 
@@ -2223,6 +2167,27 @@ class ArnavHeadedFramelet extends ArnavFramelet {
         return this.header;
     }
 
+    calcHeaderLeft() {
+        return this.getWidth() - this.getHeader().getWidth();
+    }
+
+    calcPaneHeight() {
+        return this.getHeight() - (this.isMaximized() ? 0 : this.getHeader().getHeight());
+    }
+
+    setWidth(pxWidth) {
+        super.setWidth(pxWidth);
+        this.getHeader().setLeft(this.calcHeaderLeft());
+        this.getPane().setWidth(this.getWidth());
+        return this;
+    }
+
+    setHeight(pxHeight) {
+        super.setHeight(pxHeight);
+        if(this.isNormalized()) this.getPane().setHeight(this.calcPaneHeight());
+        return this;
+    }
+
     showHeader() {
         let header = this.getHeader();
         if(header) header.show();
@@ -2235,15 +2200,17 @@ class ArnavHeadedFramelet extends ArnavFramelet {
         return this;
     }
 
-    beforeNormalize() {
+    normalizeTask() {
+        super.normalizeTask();
         this.showHeader();
-        this.getPane().setTop(this.getHeader().getNormalHeight());
+        this.getPane().setTop(this.getHeader().getHeight());
     }
 
     maximizeTask() {
         this.hideHeader();
         super.maximizeTask();
         this.getPane().maximize();
+        this.hideShortcut();
     }
 
 }
@@ -2305,17 +2272,13 @@ class ArnavConsole extends ArnavControl {
         return fmlt ? fmlt.isFolded() : undefined;
     }
 
-    beforeTileFramelets() {
-        // abstract
-    }
+    beforeTileFramelets() {}
 
     tileFrameletsTask() {
         /* TBD */
     }
 
-    afterTileFramelets() {
-        // abstract
-    }
+    afterTileFramelets() {}
 
     tileFramelets() {
         this.beforeTileFramelets();
@@ -2371,22 +2334,6 @@ class ArnavBurger extends ArnavControl {
         return this.pane;
     }
 
-    showPane() {
-        this.getPane().goToFront();
-        this.paneVisible = true;
-        return this;
-    }
-
-    hidePane() {
-        this.getPane().goToBack();
-        this.paneVisible = false;
-        return this;
-    }
-
-    isPaneVisible() {
-        return this.paneVisible;
-    }
-
     getIconFolded() {
         return this.iconFolded;
     }
@@ -2405,17 +2352,32 @@ class ArnavBurger extends ArnavControl {
         this.getIconUnfolded().style.display = "";
     }
 
+    isPaneVisible() {
+        return this.paneVisible;
+    }
+
+    showPane() {
+        this.getPane().goToFront();
+        this.showUnfolded();
+        this.paneVisible = true;
+        return this;
+    }
+
+    hidePane() {
+        this.getPane().goToBack();
+        this.showFolded();
+        this.paneVisible = false;
+        return this;
+    }
+
     handle__click(issue) {
 
         issue.terminate();
         
-        if(this.isPaneVisible()) {
+        if(this.isPaneVisible()) 
             this.hidePane();
-            this.showFolded();
-        } else {
-            this.showPane()
-            this.showUnfolded();
-        };
+        else 
+            this.showPane();
     }
 
 }/* * ** *** ***** ******** ************* *********************
