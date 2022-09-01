@@ -24,6 +24,25 @@ function createUuid() {
 }
 
 
+// Numbers
+
+function checkNumbers() {
+
+	let nums = [true];
+
+	let last = arguments.length - 1;
+	let validate = typeof arguments[last] == "function" ? arguments[last--] : n => true;
+		
+	for(let i = 0; i <= last; i++) {
+		let num = +arguments[i];
+		nums[0] &&= Number.isNaN(num) ? false : validate(num);
+		nums.push(num);
+	}	
+		
+	return nums;
+}
+
+
 // Characters and strings
 
 function firstChr(str) {
@@ -705,6 +724,10 @@ class ArnavBureaucrat {
 		return this.getProp("cfg");
 	}
 
+	hasModel() {
+		return !!this.model;
+	}
+
 	setModel(model) {
 		this.model = model;
 		return this;
@@ -714,6 +737,10 @@ class ArnavBureaucrat {
 		return this.getProp("model");
 	}
 
+	getActiveModelId() {
+		return this.getApp().getActiveModelId()
+	}
+
 	setPage(page) {
 		this.page = page;
 		return this;
@@ -721,6 +748,42 @@ class ArnavBureaucrat {
 
 	getPage() {
 		return this.getProp("page");
+	}
+
+	setCfgProp(propName, propValue) {
+		this.getCfg().setProp(propName, propValue, this.getActiveModelId());
+	}
+
+	getCfgProp(propName) {
+		return this.getCfg().getProp(propName, this.getActiveModelId());
+	}
+
+	beforeRun() {}
+
+	runTask() {
+		this.getWorkers().forEach(worker => worker.run());
+	}
+
+	afterRun() {}
+
+	run() {
+		this.beforeRun();
+		this.runTask()
+		this.afterRun();
+	}
+
+	beforeQuit() {}
+
+	quitTask() {
+		this.getWorkers().forEach(worker => worker.quit());
+	}
+
+	afterQuit() {}
+
+	quit() {
+		this.beforeQuit();
+		this.quitTask();
+		this.afterQuit();
 	}
 
 	createIssue(iType=ITYPE_GENERIC, payload=null) {
@@ -954,7 +1017,7 @@ class ArnavCfg {
 
 	// Saving and loading values of mutable configuraation properties
 
-	assembleJson() {		
+	assembleJson() {
 		return JSON.stringify(this.mutableProps);
 	}
 
@@ -1012,15 +1075,36 @@ class ArnavCfg {
  Func:      Managing DOM objects                     (^.^)
 * * ** *** ***** ******** ************* *********************/
 
+const CTL_STATE_MAXIMIZED  = "maximized";
+const CTL_STATE_NORMALIZED = "normalized";
+const CTL_STATE_FOLDED     = "folded";
+
+
 class ArnavSize {
 
-	constructor(left=0, top=0, width=0, height=0, maximized=false, folded=false) {
+	constructor(left=0, top=0, width=0, height=0, state=CTL_STATE_NORMALIZED) {
 		this.left = left;
 		this.top = top;
 		this.width = width;
 		this.height = height;
-		this.maximized = maximized;
-		this.folded = folded;
+		this.state = state;
+	}
+	
+	isValid() {
+		let validStates = {CTL_STATE_FOLDED, CTL_STATE_NORMALIZED, CTL_STATE_MAXIMIZED};
+		return (checkNumbers(this.left, this.top, this.width, this.height, x => x >= 0)[0]) 
+		    	&& Object.values(validStates).includes(this.state);
+	}
+
+	load(dto) {
+		if(!!dto) 
+			[this.left, this.top, this.width, this.height, this.state] = 
+				[dto.left, dto.top, dto.width, dto.height, dto.state]; 
+		return this;
+	}
+
+	belongs(x, y) {
+		return this.getLeft() <= x && x <= this.getRight() && this.getTop() <= y && y <= this.getBottom();
 	}
 }
 
@@ -1035,8 +1119,9 @@ class ArnavControl extends ArnavBureaucrat {
 		this.domObjectValue = this.getDomObjectValue();
 		this.controlValue = this.domObject ? this.getControlValue() : null;
 		this.normalSize = this.createSize();
-		this.maximized = false;
-		this.folded = false;
+		this.state = CTL_STATE_NORMALIZED;
+		this.zIndexMin = 0;
+		this.zIndexMax = 0;
 	}
 
 	getDomObject() {
@@ -1173,10 +1258,12 @@ class ArnavControl extends ArnavBureaucrat {
 	
 	show() {
 		this.getDomObject().style.display = "";
+		return this;
 	}
 	
 	hide() {
 		this.getDomObject().style.display = "none";
+		return this;
 	}
 
 	getLeft() {
@@ -1294,6 +1381,7 @@ class ArnavControl extends ArnavBureaucrat {
 	stratch() {
 		let chief = this.getChief();
 		this.setSize4(0, 0, chief.getInnerWidth(), chief.getInnerHeight());
+		return this;
 	}
 
 	getInnerWidth() {
@@ -1304,26 +1392,38 @@ class ArnavControl extends ArnavBureaucrat {
 		return this.getHeight();
 	}
 
-	createSize(left=0, top=0, width=0, height=0, maximized=false, folded=false) {
-		return new ArnavSize(left, top, width, height, maximized, folded);
+	createSize(left=0, top=0, width=0, height=0, state) {
+		return new ArnavSize(left, top, width, height, state);
 	}
 
 	getSize() {
 		return this.createSize(this.getLeft(), this.getTop(), 
 							   this.getWidth(), this.getHeight(),
-			                   this.isMaximized(), this.isFolded());
+			                   this.state);
 	}
 
-	setSize(size) {
-		return this.setTop(size.top).setLeft(size.left).setWidth(size.width).setHeight(size.height);
+	setSize(s) {
+		return this.setTop(s.top).setLeft(s.left).setWidth(s.width).setHeight(s.height).setState(s.state);
 	}
 
 	setSize4(left, top, width, height) {
 		return this.setSize(this.createSize(left, top, width, height));
 	}
 
+	issueBelongs(issue) {
+		return this.getSize.belongs(issue.payload.clientX, issue.payload.clientY);
+	}
+
+	setState(state) {
+		this.state = state;
+	}
+
+	getState() {
+		return this.state;
+	}
+
 	isNormalized() {
-		return !this.isMaximized() && !this.isFolded();
+		return this.getState() == CTL_STATE_NORMALIZED;
 	}
 
 	getNormalSize() {
@@ -1364,20 +1464,15 @@ class ArnavControl extends ArnavBureaucrat {
 	afterNormalize() {}
 
 	normalize() {
-
-		if(!this.isNormalized()) {
-			this.beforeNormalize();
-			this.normalizeTask();
-			this.afterNormalize();	
-			this.maximized = false;
-			this.folded = false;
-		}
-
+		this.beforeNormalize();
+		this.normalizeTask();
+		this.afterNormalize();	
+		this.setState(CTL_STATE_NORMALIZED);
 		return this;
 	}
 
 	isMaximized() {
-		return this.maximized;
+		return this.getState() == CTL_STATE_MAXIMIZED;
 	}
 
 	beforeMaximize() {}
@@ -1389,22 +1484,17 @@ class ArnavControl extends ArnavBureaucrat {
 	afterMaximize() {}
 
 	maximize() {
-
-		if(!this.isMaximized()) {
-			if(this.isFolded()) this.normalize();
-			this.saveNormalSize();
-			this.beforeMaximize();
-			this.maximizeTask();
-			this.afterMaximize();
-			this.maximized = true;
-			this.folded = false;
-		}
-
+		if(this.isFolded()) this.normalize();
+		this.saveNormalSize();
+		this.beforeMaximize();
+		this.maximizeTask();
+		this.afterMaximize();
+		this.setState(CTL_STATE_MAXIMIZED);
 		return this;
 	}
 
 	isFolded() {
-		return this.folded;
+		return this.getState() == CTL_STATE_FOLDED;
 	}
 
 	beforeFold() {}
@@ -1416,22 +1506,34 @@ class ArnavControl extends ArnavBureaucrat {
 	afterFold() {}
 
 	fold() {
-
-		if(!this.isFolded()) {
-			this.saveNormalSize();
-			this.beforeFold();
-			this.foldTask();
-			this.afterFold();
-			this.maximized = false;
-			this.folded = true;
-		}
-
+		this.saveNormalSize();
+		this.beforeFold();
+		this.foldTask();
+		this.afterFold();
+		this.setState(CTL_STATE_FOLDED);
 		return this;
 	}
 
+	setZIndexMin(zIndex) {
+		this.zIndexMin = zIndex;
+		return this;
+	}
+
+	getZIndexMin() {
+		return this.zIndexMin;
+	}
+
+	setZIndexMax(zIndex) {
+		this.zIndexMax = zIndex;
+		return this;
+	}
+
+	getZIndexMax() {
+		return this.zIndexMax;
+	}
+
 	setZIndex(zIndex) {
-		if(this.checkDomObject())
-			this.getDomObject().style.zIndex = zIndex;
+		if(this.checkDomObject()) this.getDomObject().style.zIndex = zIndex;
 		return this;
 	}
 
@@ -1439,43 +1541,25 @@ class ArnavControl extends ArnavBureaucrat {
 		return this.checkDomObject() ? useful(this.getDomObject().style.zIndex, 0) : 0; 
 	}
 
-	getZIndexMax() {
-
-		let zIndexMax = 0;
-
-		if(this.hasWorkers()) {
-			let zIndexMax = this.getWorkerByIdx(0).getZIndex();
-			for(let i = 1; i < this.countWorkers(); i++) {
-				let zIndex = this.getWorkerByIdx(i).getZIndex();
-				zIndexMax = zIndexMax < zIndex ? zIndex : zIndexMax;
-			}
-		}
-
-		return zIndexMax
+	calcZIndexBack() {
+		return this.getChief().getZIndexMin() - 1;
 	}
 
-	getZIndexMin() {
-
-		let zIndexMin = 0;
-
-		if(this.hasWorkers()) {
-			let zIndexMin = this.getWorkerByIdx(0).getZIndex();
-			for(let i = 1; i < this.countWorkers(); i++) {
-				let zIndex = this.getWorkerByIdx(i).getZIndex();
-				zIndexMin = zIndexMin > zIndex ? zIndex : zIndexMin;
-			}
-		}
-
-		return zIndexMin
+	calcZIndexTop() {
+		return this.getChief().getZIndexMax() + 1;
 	}
 
 	bringToFront(targetWorker) {
-		targetWorker.setZIndex(this.getZIndexMax() + 1);		
+		let zIndex = this.calcZIndexTop() + 1;
+		this.getChief().setZIndexMax(zIndex);
+		targetWorker.setZIndex(zIndex);		
 		return this;
 	}
 
 	bringToBack(targetWorker) {
-		targetWorker.setZIndex(this.getZIndexMin() - 1);		
+		let zIndex = this.calcZIndexBack() - 1;
+		this.getChief().setZIndexMin(zIndex);
+		targetWorker.setZIndex(zIndex);		
 		return this;
 	}
 
@@ -2067,6 +2151,9 @@ class ArnavFrameletHeader extends ArnavControl {
 
 class ArnavFrameletPane extends ArnavControl {
 
+    handle__click(issue) {
+        issue.terminate();
+    }
 
 }
 
@@ -2084,6 +2171,14 @@ class ArnavFramelet extends ArnavControl {
     setTitle(title) {
         this.title = title;
         return this;
+    }
+
+    show() {
+        this.goToFront();
+    }
+
+    hide() {
+        this.goToBack();
     }
 
     getTitle() {
@@ -2272,24 +2367,24 @@ class ArnavConsole extends ArnavControl {
         return fmlt ? fmlt.isFolded() : undefined;
     }
 
-    beforeTileFramelets() {}
+    beforeOrganizeFramelets() {}
 
-    tileFrameletsTask() {
+    organizeFrameletsTask() {
         /* TBD */
     }
 
-    afterTileFramelets() {}
+    afterOrganizeFramelets() {}
 
-    tileFramelets() {
-        this.beforeTileFramelets();
-        this.tileFrameletsTask();
-        this.afterTileFramelets();
+    organizeFramelets() {
+        this.beforeOrganizeFramelets();
+        this.organizeFrameletsTask();
+        this.afterOrganizeFramelets();
         return this;        
     }
 
     handle__fold(issue) {
         issue.terminate();
-        issue.getPayload().fold();
+        if(issue.getPayload()) issue.getPayload().fold();
     }
 
     handle__unfold(issue) {
@@ -2511,22 +2606,11 @@ class ArnavApp extends ArnavBureaucrat {
 			this.getCfg().unpackFromJson(lsResult.value);
 	}
 	
-	createPage(chief) {
-		/* abstract */
-		return null;
+	getActiveModelId() {
+		return this.hasModel() ? this.getModel().getId() : undefined;
 	}
 
-	afterRun() {
-		/* abstract */
-	}
-
-	run() {
-		this.afterRun();
-	}
-
-	beforeQuit() {
-		/* abstract */
-	}
+	createPage(chief) {	return null }
 
 	print() {
 		let tmp = document.body.innerHTML; 
@@ -2535,8 +2619,7 @@ class ArnavApp extends ArnavBureaucrat {
 		document.body.innerHTML = tmp;
 	}
 
-	quit() {
-		this.beforeQuit();
+	afterQuit() {
 		this.saveCfg();
 	}
 
