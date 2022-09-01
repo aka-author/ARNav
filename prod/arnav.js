@@ -2509,7 +2509,7 @@ class ArnavStrip extends ArnavControl {
     adjustLargeImgs() {
 
         for(let figImg of this.getFigureImgs())
-            figImg.adjustWidth();
+            if(figImg.isLarge()) figImg.adjustWidth(); else figImg.makePassive();
 
         return this;
     }
@@ -2547,6 +2547,10 @@ class ArnavFigureImg extends ArnavControl {
         return this;
     }
 
+    makePassive() {
+        this.getDomObject().style.cursor = "default";
+    }
+
     restoreOriginalWidth() {
         this.setWidth(this.getOriginalWidth());
         this.getDomObject().style.cursor = "zoom-out";
@@ -2555,11 +2559,13 @@ class ArnavFigureImg extends ArnavControl {
 
     handle__click(issue) {
         
-        if(this.adjusted) { 
-            this.restoreOriginalWidth(); 
-            this.adjusted = false;
-        } else 
-            this.adjustWidth();
+        if(this.isLarge()) {
+            if(this.adjusted) { 
+                this.restoreOriginalWidth(); 
+                this.adjusted = false;
+            } else 
+                this.adjustWidth();
+        }
 
         issue.terminate();
     }
