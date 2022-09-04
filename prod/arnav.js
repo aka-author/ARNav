@@ -2509,7 +2509,9 @@ class ArnavStrip extends ArnavControl {
     adjustLargeImgs() {
 
         for(let figImg of this.getFigureImgs())
-            if(figImg.isLarge()) figImg.adjustWidth(); else figImg.makePassive();
+            figImg.adjustWidth();
+        
+            //if(figImg.isLarge()) figImg.adjustWidth(); else figImg.makePassive();
 
         return this;
     }
@@ -2525,25 +2527,51 @@ class ArnavFigureImg extends ArnavControl {
 
     constructor(chief, id) {
         super(chief, id);
-        this.originalWidth = this.getWidth();
+        this.originalLeft = this.getLeft();
+        this.originalWidth = this.getDomObject() ? this.getDomObject().naturalWidth : 0;
     }
 
-    getMaxWidth() {
-        return this.getChief().getWidth() - this.getLeft();
+    getOriginalLeft() {
+        return this.originalLeft;
     }
 
     getOriginalWidth() {
         return this.originalWidth;
+    }
+
+    getMaxWidth() {
+        return this.getChief().getWidth() - this.getOriginalLeft();
     }
     
     isLarge() {
         return this.getOriginalWidth() > this.getMaxWidth();
     }
 
+    isSmall() {
+        return this.getOriginalWidth() < this.getMaxWidth();
+    }
+
+    isUnreasonablySmall() {
+        return    (this.isLarge() && this.getWidth() < this.getMaxWidth()) 
+               || (this.isSmall() && this.getWidth() < this.getOriginalWidth());                
+     }
+
     adjustWidth() {
-        this.setWidth(this.getMaxWidth());
-        this.getDomObject().style.cursor = "zoom-in";
-        this.adjusted = true;
+
+        if(this.getWidth() > this.getMaxWidth()) {
+            this.setWidth(this.getMaxWidth());
+            this.getDomObject().style.cursor = "zoom-in";
+            this.adjusted = true;
+        } else if(this.isUnreasonablySmall()) {
+            this.setWidth(Math.min(this.getOriginalWidth(), this.getMaxWidth()));
+            this.adjusted = true;
+        }
+
+       if(this.getWidth() == this.getOriginalWidth() && this.getOriginalWidth() < this.getMaxWidth()) {
+            this.makePassive();
+            this.adjusted = false;
+       }
+
         return this;
     }
 
@@ -2623,6 +2651,7 @@ class ArnavApp extends ArnavBureaucrat {
 		document.body.innerHTML = document.getElementById('divTopicBody').innerHTML;
 		window.print();
 		document.body.innerHTML = tmp;
+		location.reload();
 	}
 
 	afterQuit() {
