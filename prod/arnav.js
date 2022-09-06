@@ -1927,9 +1927,7 @@ class ArnavTocTree extends ArnavScrollArea {
         return cSpan;
 	}
 
-	assembleEntryLinkDom(entry) {
-        /* abstract */
-	}
+	assembleEntryLinkDom(entry) {}
 
 	assembleEntryTitleDom(entry) {
 
@@ -2016,9 +2014,7 @@ class ArnavTocTree extends ArnavScrollArea {
 	 return this.getOpenIds();
 	}
 
-    handle__click(issue) {
-        /* abstract */
-    }
+    handle__click(issue) {}
 
     handle__scroll(issue) {
         issue.convert("uitocscroll", this.getDomObject().scrollTop.toString());
@@ -2112,11 +2108,7 @@ class ArnavTocTreeSinglePage extends ArnavTocTree {
                 break;
         }
     }
-}
-
-
-
-/* * ** *** ***** ******** ************* ********************* 
+}/* * ** *** ***** ******** ************* ********************* 
  Product:	Active Reader Navigation Library
  Module:	framelet.js                               (\(\
  Func:      Managing a framelet                       (^.^)
@@ -2511,8 +2503,6 @@ class ArnavStrip extends ArnavControl {
         for(let figImg of this.getFigureImgs())
             figImg.adjustWidth();
         
-            //if(figImg.isLarge()) figImg.adjustWidth(); else figImg.makePassive();
-
         return this;
     }
 
