@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="reference_egb_cxh_zxb" xml:lang="en">
+    <title>ArnavTasker</title>
+    <refbody>
+        <section id="section_h4d_4fj_zxb">
+            <title>Base Class</title>
+            <p><xref href="re-ArnavRoot.dita">ArnavRoot</xref></p>
+        </section>
+        <section id="section_dfb_5fj_zxb">
+            <title>Methods</title>
+            <table frame="all" rowsep="1" colsep="1" id="table_gd1_fxh_zxb">
+                <tgroup cols="4">
+                    <colspec colname="c1" colnum="1" colwidth="1.71*"/>
+                    <colspec colname="newCol2" colnum="2" colwidth="1*"/>
+                    <colspec colname="newCol3" colnum="3" colwidth="1*"/>
+                    <colspec colname="c2" colnum="4" colwidth="3.08*"/>
+                    <thead>
+                        <row>
+                            <entry>Method</entry>
+                            <entry>Override</entry>
+                            <entry>Abstract</entry>
+                            <entry>Sense</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry><apiname>addTasker</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Appends a tasker to another tasker as a subordinate</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>accept</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Returns <codeph>true</codeph> is the tasker agrees to handle a
+                                task another tasker attempts to delegate to it</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>cease</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Terminates propagation of a task</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>constructor</apiname></entry>
+                            <entry>Welcome</entry>
+                            <entry/>
+                            <entry>Creates a new object of a class</entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <apiname>countTaskers</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Returns the number of subordinate taskers</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>diy</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Dispatches a task among handler methods</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>downstream</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Downstreams a task to subordinate taskers</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>emit</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Creates a new task</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>escalate</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Delegates a task to a chief tasker</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>finish</apiname></entry>
+                            <entry>Welcome</entry>
+                            <entry>Yes</entry>
+                            <entry>Gets called before diy()</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>forEach</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Applies a callback function to each subordinate tasker</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>getChief</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Returns a chief tasker</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>getTasker</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Returns a tasker by its identifier</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>hasChief</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Returns <codeph>true</codeph> if the tasker has a chief</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>hasTasker</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Returns <codeph>true</codeph> if the tasker has a subordinate
+                                with a given identifier</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>hasTaskHandler</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Returns <codeph>true</codeph> if the tasker has a handler method
+                                for a given task type</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>inheritProp</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Returns a value of a given inherited property</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>isMyDOMEvent</apiname></entry>
+                            <entry>Perhaps</entry>
+                            <entry/>
+                            <entry>Returns <codeph>true</codeph> is the tasker agrees to handle an
+                                event a DOM object attempts to foist to it</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>ondom</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Accepts an event from a DOM object</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>perform</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Accepts a task from another tasker</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>reemit</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Converts a task to a new task</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>removeTasker</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Excludes a tasker with a given identifier from the
+                                hierarchy</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>setChief</apiname></entry>
+                            <entry>Rare</entry>
+                            <entry/>
+                            <entry>Assign a given tasker to be a chief of the tasker</entry>
+                        </row>
+                        <row>
+                            <entry><apiname>start</apiname></entry>
+                            <entry>Welcome</entry>
+                            <entry/>
+                            <entry>Gets called at the very end of in the task execution</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+        </section>
+    </refbody>
+</reference>

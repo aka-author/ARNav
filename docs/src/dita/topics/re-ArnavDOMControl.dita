@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="reference_egb_cxh_zxb" xml:lang="en">
+    <title>ArnavDOMControl</title>
+    <titlealts>
+        <searchtitle/>
+    </titlealts>
+    <refbody>
+        <section id="section_bkv_x2j_zxb">
+            <title>Base Class</title>
+            <p><xref href="re-ArnavTasker.dita">ArnavTasker</xref></p>
+        </section>
+        <section id="section_m3m_z2j_zxb">
+            <title>Methods</title>
+        </section>
+        <table frame="all" rowsep="1" colsep="1" id="table_gd1_fxh_zxb">
+            <tgroup cols="4">
+                <colspec colname="c1" colnum="1" colwidth="1.71*"/>
+                <colspec colname="newCol2" colnum="2" colwidth="1*"/>
+                <colspec colname="newCol3" colnum="3" colwidth="1*"/>
+                <colspec colname="c2" colnum="4" colwidth="3.08*"/>
+                <thead>
+                    <row>
+                        <entry>Method</entry>
+                        <entry>Override</entry>
+                        <entry>Abstract</entry>
+                        <entry>Sense</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry><apiname>befriend</apiname></entry>
+                        <entry>Rare</entry>
+                        <entry>No</entry>
+                        <entry>Embeds the object in the hierarchy of other Arnav DOM controls based
+                            on the page structure and Arnav properties </entry>
+                    </row>
+                    <row>
+                        <entry><apiname>bind</apiname></entry>
+                        <entry>Rare</entry>
+                        <entry>No</entry>
+                        <entry>Connects the object to the associated DOM object</entry>
+                    </row>
+                    <row>
+                        <entry><apiname>constructor</apiname></entry>
+                        <entry>Welcome</entry>
+                        <entry>No</entry>
+                        <entry>Creates a new object of the class</entry>
+                    </row>
+                    <row>
+                        <entry><apiname>getArnavDOMElementProp</apiname></entry>
+                        <entry>Rare</entry>
+                        <entry>No</entry>
+                        <entry>Returns an Arnav property value defined in the corresponding HTML
+                            element on the page</entry>
+                    </row>
+                    <row>
+                        <entry><apiname>getArnavPropsAttrName</apiname></entry>
+                        <entry>Rare</entry>
+                        <entry>No</entry>
+                        <entry>Returns the name of the HTML attribute that we use in a certain
+                            application for storing Arnav properties</entry>
+                    </row>
+                    <row>
+                        <entry><apiname>getDOMObject</apiname></entry>
+                        <entry>Rare</entry>
+                        <entry>No</entry>
+                        <entry>Returns a corresponding DOM object if it is available</entry>
+                    </row>
+                    <row>
+                        <entry><apiname>hasDOMObject</apiname></entry>
+                        <entry>Rare</entry>
+                        <entry>No</entry>
+                        <entry>Returns <codeph>true</codeph> if  the object has a valid pointer to a
+                            corresponding DOM object on the page</entry>
+                    </row>
+                    <row>
+                        <entry><apiname>isMyDOMEvent</apiname></entry>
+                        <entry>Perhaps</entry>
+                        <entry>No</entry>
+                        <entry>Returns <codeph>true</codeph> is the tasker agrees to handle an event
+                            a DOM object attempts to foist to it</entry>
+                    </row>
+                    <row>
+                        <entry><apiname>ondom</apiname></entry>
+                        <entry>Rare</entry>
+                        <entry>No</entry>
+                        <entry>Accepts an event from a DOM object</entry>
+                    </row>
+                    <row>
+                        <entry><apiname>setArnavPropsAttrName</apiname></entry>
+                        <entry>Rare</entry>
+                        <entry>No</entry>
+                        <entry>Assigns the name of the HTML attribute that we use in a certain
+                            application for storing Arnav properties. The default value is
+                                <xmlatt>data-arnav</xmlatt>
+                        </entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+    </refbody>
+</reference>

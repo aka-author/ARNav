@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE concept PUBLIC "-//OASIS//DTD DITA Concept//EN" "concept.dtd">
+<concept id="concept_jzz_tqh_zxb" xml:lang="en">
+    <title>Taskers</title>
+    <conbody>
+        <p>A <term>tasker</term> is an object that performs tasks. Every object in an application is
+            a tasker, unless it serves a specific purpose, such as being a configuration, state
+            machine, or any other specialized role. Taskers are like Lego bricks that make up the
+            structure of an application.</p>
+        <p>The library provides the abstract class <apiname>ArnavTasker</apiname> as a base class
+            for each tasker. Some other abstract classes including
+                <apiname>ArnavDOMControl</apiname> are derived from <apiname>ArnavTasker</apiname>. </p>
+        <p>Taskers are arranged into hierarchy inside an application. Each tasker except the main
+            one has a <term>chief</term>. Each tasker has a list of <i>subordinate</i> taskers. </p>
+        <p>When received a task, the tasker attempts to perform it itself. If the tasker is unable
+            to perform the task, then it delegates the task to other taskers. Metaphorically, a
+            tasker behaves like a bureaucrat who, when unable to cope, shifts tasks to their
+            colleagues.</p>
+        <p>The order of delegating the task depends on the type of the task.</p>
+        <table frame="all" rowsep="1" colsep="1" id="table_sn2_xrh_zxb">
+            <title>The order of delegating a task</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="1*"/>
+                <colspec colname="c2" colnum="2" colwidth="1*"/>
+                <thead>
+                    <row>
+                        <entry>Task type</entry>
+                        <entry>Order of delegating</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry><codeph>bubble</codeph></entry>
+                        <entry>Escalating to the chief</entry>
+                    </row>
+                    <row>
+                        <entry><codeph>broadcast</codeph></entry>
+                        <entry>Escalating to the chief, then downstreaming to the subordinate
+                            taskers</entry>
+                    </row>
+                    <row>
+                        <entry><codeph>private</codeph></entry>
+                        <entry>No delegating</entry>
+                    </row>
+                    <row>
+                        <entry><codeph>sinker</codeph></entry>
+                        <entry>Downstreaming to the subordinate taskers</entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+        <p>A tasker provides the set of handler methods for handling tasks. The format of a handler
+            method name is <codeph>handle__&lt;task></codeph> where "<codeph>&lt;task></codeph>"
+            stands for a task type name, e. g. <codeph>handle__mousemove</codeph>,
+                <codeph>handle__click</codeph>, <codeph>handle__mom_came_home</codeph>, etc.
+            Normally, an application programmer does not write code for dispatching tasks among
+            handler methods. The <apiname>ArnavTasker</apiname> class dispatches tasks among handler
+            methods automatically.</p>
+        <p> </p>
+    </conbody>
+</concept>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html dir="ltr">
+    <head>
+
+        <meta charset="utf-8">
+
+        <title>Arnav Debug</title>
+
+        <script src="../js/debug.js"></script>
+        <script src="../js/utils.js"></script>
+        <script src="../js/tags.js"></script>
+        <script src="../js/domutils.js"></script>
+        <script src="../js/root.js"></script>
+        <script src="../js/geometry.js"></script>
+        <script src="../js/cfg.js"></script>
+        <script src="../js/task.js"></script>
+        <script src="../js/fsm.js"></script>
+        <script src="../js/tasker.js"></script>
+        <script src="../js/domcontrol.js"></script>
+        <script src="../js/uicontrol.js"></script>
+        <script src="../js/uimenu.js"></script>
+        <script src="../js/page.js"></script>
+
+        <style>
+
+            body {
+                margin: 0;
+                overflow: hidden;
+            }
+
+            .header {
+                height: 35pt;
+                background: #045466;
+            }
+
+            .animal {
+                display: inline-block;
+                margin-top: 5pt;
+                margin-bottom: 5pt;
+                margin-inline-start: 30px;
+                padding: 3pt;
+                border-radius: 5pt;
+                background: #ffffff;
+                font-size: 17pt;
+            }
+
+            input.toolbarUIControl {
+                height: 17pt;
+                margin-top: 8.5pt;
+                margin-inline-start: 30px;
+            }
+
+            #divToolbar {
+                height: 35pt;
+            }
+
+            #playground {
+                position: absolute; 
+                width: 100vw; 
+                height: 100vh; 
+                background: #ebe1e1
+            }
+
+            div.winHeader {
+                width: 100%;
+                height: 25pt;
+                background: #000088;
+            }
+
+            .banner {
+                margin-top: 10pt;
+                direction: ltr;
+            }
+
+            .ctrlRect {
+                position: absolute;
+                width: 150px; 
+                height: 150px; 
+                border-top: 2px solid #444444;
+                border-bottom: 2px solid #444444;
+                border-inline-start: 2px solid #ff0000;
+                border-inline-end: 2px solid #00ff00;
+                background: #ffccdd;
+                text-align: center;
+                --overflow: hidden;
+            }
+
+            .smallCtrlRect {
+                position: absolute; 
+                left: 2px;
+                top: 2px;
+                width: 30pt; 
+                height: 30pt; 
+                border: 2px solid #f2ff00;
+                background: #13bae0;
+            }
+
+            /* Main menu */
+
+            .ArnavMainMenu {
+                padding-top: 10pt;
+                user-select: none;
+                font-family: sans-serif;
+                cursor: default;
+            }
+
+            .ArnavMainMenuItem {
+                display: inline-block;
+                margin-inline-start: 50pt;
+            }
+
+            .ArnavMainMenuItemHeader {
+                display: inline-block;
+                color: white;
+                font-weight: bold;
+            }
+
+            .ArnavMainMenuItemHeaderActive {
+                color: #f2ff00;
+            }
+
+            .ArnavMainMenuItemHeaderSelected {
+                background: #ebe1e1;
+                color: #000000;
+            }
+
+            .ArnavMainMenuItemOffspring {
+                position: absolute;
+            }
+            
+            /* Pull-down menu */
+
+            .ArnavMenuItemGroup {
+                padding-top: 3pt;
+                padding-bottom: 3pt;
+                border-top: 1px solid #000000;
+                border-bottom: 1px solid #000000;
+            }
+
+            .ArnavPullDownMenu {
+                position: absolute;
+                padding: 5pt;
+                border: 1px solid #000088;
+                border-radius: 3pt;
+                background: #ebe1e1;
+                color:#000000;
+                white-space: nowrap;
+            }
+
+            .ArnavPullDownMenuItemCommandHeader {
+                display: flex;
+                padding: 4pt;
+                border-radius: 3pt;
+                justify-content: space-between;
+                color: #000000;
+                white-space: nowrap;
+            }
+
+            .ArnavPullDownMenuItemNestedHeader {
+                display: flex;
+                padding: 4pt;
+                border-radius: 3pt;
+                color: #000000;
+                justify-content: space-between;
+            }
+
+            
+
+            .ArnavPullDownMenuItemCommandHeader div:nth-child(2) {
+               padding-inline-start: 60pt;
+            }
+
+            .ArnavPullDownMenuItemCommandHeaderSelected {
+                background: #000088;
+                color: #ffffff;
+            }
+
+            .ArnavPullDownMenuItemNestedHeader {
+                color: #000000;
+            }
+
+            .ArnavPullDownMenuItemNestedHeaderSelected {
+                background: #000088;
+                color: #ffffff;
+            }
+
+
+            [dir="rtl"] .ltr  {
+                display: none;
+            }
+
+            [dir="ltr"] .rtl  {
+                display: none;
+            }
+
+        </style>
+
+        <script src="debug.js"></script>
+
+    </head>
+    <body id="bodyPage" onload="debug()" data-arnav-props="">
+
+        <div id="divPageHeader" class="header">
+            <!--
+            <div class="animal">Cats</div>
+            <div class="animal">Dogs</div>
+            <div class="animal">Horses</div>
+            <div class="animal">Cows</div>
+            -->
+        </div>
+
+        <div id="divToolbar">
+            <input 
+                id="inputToggleDirection" 
+                type="button" 
+                value="Toggle direction" 
+                data-arnav-props="class: ToggleDirectionButton"
+                class="toolbarUIControl">
+        </div>
+        <!--
+        <div
+            id="playground"
+            data-arnav-props="class: Playground">
+            
+            <div 
+                id="divRect1" 
+                data-arnav-props="class: CtrlRect; start: 30" 
+                class="ctrlRect"
+                style="top: 10pt;">
+                
+                <div 
+                    id="divRect1WinTitle"
+                    --data-arnav-props="class: WinHeader"
+                    class="winHeader"></div>
+                
+                
+                <div 
+                    id="divRect1.1" 
+                    data-arnav-props="class: CtrlRect" 
+                    class="smallCtrlRect"></div>
+                
+            </div>
+
+            <div 
+                id="divRect2" 
+                data-arnav-props="class: CtrlRect; start: 220" 
+                class="ctrlRect"
+                style="top: 10pt;"></div>
+
+            <div 
+                id="divRect3" 
+                data-arnav-props="class: CtrlRect; start: 30" 
+                class="ctrlRect"
+                style="top: 160pt"></div>
+
+            <div 
+                id="divRect4" 
+                data-arnav-props="class: CtrlRect; start: 220" 
+                class="ctrlRect"
+                style="top: 160pt">
+            </div>  
+            
+
+        </div>     
+    -->
+    </body>
+</html>

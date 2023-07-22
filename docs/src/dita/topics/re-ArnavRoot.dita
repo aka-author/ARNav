@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="reference_egb_cxh_zxb" xml:lang="en">
+    <title>ArnavRoot</title>
+    <titlealts>
+        <searchtitle/>
+    </titlealts>
+    <refbody>
+        <section id="section_bkv_x2j_zxb">
+            <title>Base Class</title>
+            <p>No base class.</p>
+        </section>
+        <section id="section_m3m_z2j_zxb">
+            <title>Methods</title>
+        </section>
+        <table frame="all" rowsep="1" colsep="1" id="table_gd1_fxh_zxb">
+            <tgroup cols="4">
+                <colspec colname="c1" colnum="1" colwidth="1.71*"/>
+                <colspec colname="newCol2" colnum="2" colwidth="1*"/>
+                <colspec colname="newCol3" colnum="3" colwidth="1*"/>
+                <colspec colname="c2" colnum="4" colwidth="3.08*"/>
+                <thead>
+                    <row>
+                        <entry>Method</entry>
+                        <entry>Override</entry>
+                        <entry>Abstract</entry>
+                        <entry>Sense</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry><apiname>getId</apiname></entry>
+                        <entry>Rare</entry>
+                        <entry>No</entry>
+                        <entry>Return a unique identifier of the object</entry>
+                    </row>
+                    <row>
+                        <entry><apiname/></entry>
+                        <entry/>
+                        <entry/>
+                        <entry/>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+    </refbody>
+</reference>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE concept PUBLIC "-//OASIS//DTD DITA Concept//EN" "concept.dtd">
+<concept id="concept_tvz_32h_zxb" xml:lang="en">
+    <title>What is Arnav?</title>
+    <conbody>
+        <p>Arnav is a JavaScript library that allows developers to implement simple interactive web
+            applications without the need to navigate the complexities and steep learning curve
+            typically associated with advanced web frameworks that can feel like rocket science.</p>
+    </conbody>
+</concept>
