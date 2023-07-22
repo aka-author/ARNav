@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Checking the ARNav library</title>
+        <style>
+            .quarter {
+                position: absolute; 
+                width: 40vw; 
+                height: 30vh; 
+                padding: 10pt; 
+                cursor: grab;
+            }
+        </style>
+        <script src="../../prod/js/arnav.js"></script>
+        <script src="moverects.js"></script>
+    </head>
+    <body onload="GLOBAL_APP.run()">
+        <h1>Checking the ARNav library</h1>
+        <div style="position: absolute">
+            <div id="q1" 
+                 class="quarter" 
+                 style="left: 0; top: 0; background: #ffccdd;">Drag me!</div>
+            <div id="q2" 
+                 class="quarter" 
+                 style="left: 45vw; top: 0; background: #ccddff">Drag me!</div>
+            <div id="q3" 
+                 class="quarter" 
+                 style="left: 0; top: 35vh; background: #ddccff">Drag me!</div>
+            <div id="q4" 
+                 class="quarter" 
+                 style="left: 45vw; top: 35vh; background: #ddffcc">Drag me!</div>
+        </div>
+    </body>
+</html>
