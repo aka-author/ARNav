@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html id="htmlPage" data-arnav-props="class: DebugPage">
     <head>
         <title>Sidebar</title>
 
@@ -13,11 +13,13 @@
         <script src="../js/task.js"></script>
         <script src="../js/fsm.js"></script>
         <script src="../js/tasker.js"></script>
+        <script src="../js/controller.js"></script>
         <script src="../js/domcontrol.js"></script>
         <script src="../js/uicontrol.js"></script>
         <script src="../js/uimenu.js"></script>
         <script src="../js/uisidebar.js"></script>
         <script src="../js/page.js"></script>
+        <script src="../js/app.js"></script>
 
         <script>
             
@@ -29,9 +31,7 @@
             }
 
             function start() {
-                const page = new DebugPage(null, null, "bodyPage");
-                page.bind();
-                page.turnOn();
+                const app = new ArnavApp().turnOn();
             }
 
         </script>
@@ -47,6 +47,7 @@
 
             .ArnavSidebar {
                 position: absolute;
+                height: 100vh;
                 z-index: 1;
                 background: antiquewhite;
                 overflow: hidden;
@@ -64,7 +65,7 @@
 
         </style>
     </head>
-    <body id="bodyPage" onload="start()" data-arnav-props="">
+    <body onload="start()">
         <div>
             <div id="divSidebar" data-arnav-props="class: ArnavSidebar" class="ArnavSidebar ArnavSidebarHidden">
                 <ul>
