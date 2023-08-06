@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Sidebar</title>
+
+        <script src="../js/debug.js"></script>
+        <script src="../js/utils.js"></script>
+        <script src="../js/tags.js"></script>
+        <script src="../js/domutils.js"></script>
+        <script src="../js/root.js"></script>
+        <script src="../js/geometry.js"></script>
+        <script src="../js/cfg.js"></script>
+        <script src="../js/task.js"></script>
+        <script src="../js/fsm.js"></script>
+        <script src="../js/tasker.js"></script>
+        <script src="../js/domcontrol.js"></script>
+        <script src="../js/uicontrol.js"></script>
+        <script src="../js/uimenu.js"></script>
+        <script src="../js/uisidebar.js"></script>
+        <script src="../js/page.js"></script>
+
+        <script>
+            
+            class DebugPage extends ArnavPage {
+
+                handle__dom_click(task) {
+                    this.getTasker("divSidebar").toggle();
+                }
+            }
+
+            function start() {
+                const page = new DebugPage(null, null, "bodyPage");
+                page.bind();
+                page.turnOn();
+            }
+
+        </script>
+
+
+        <style>
+
+            body {
+                margin: 0;
+                width: 100vw;
+                height: 100vh;
+            }
+
+            .ArnavSidebar {
+                position: absolute;
+                z-index: 1;
+                background: antiquewhite;
+                overflow: hidden;
+                transition: width 0.5s;
+                transition-timing-function: cubic-bezier(.56,-0.01,1,.14);
+            }
+
+            .ArnavSidebarVisible {
+                width: 25vw;
+            }
+
+            .ArnavSidebarHidden {
+                width: 0;
+            }
+
+        </style>
+    </head>
+    <body id="bodyPage" onload="start()" data-arnav-props="">
+        <div>
+            <div id="divSidebar" data-arnav-props="class: ArnavSidebar" class="ArnavSidebar ArnavSidebarHidden">
+                <ul>
+                    <li>Cats</li>
+                    <li>Dogs</li>
+                    <li>Rabbits</li>
+                    <li>Horses</li>
+                </ul>
+            </div>
+        </div>
+    </body>
+</html>
