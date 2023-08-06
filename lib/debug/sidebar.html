@@ -18,6 +18,7 @@
         <script src="../js/uicontrol.js"></script>
         <script src="../js/uimenu.js"></script>
         <script src="../js/uisidebar.js"></script>
+        <script src="../js/uiburger.js"></script>
         <script src="../js/page.js"></script>
         <script src="../js/app.js"></script>
 
@@ -26,7 +27,8 @@
             class DebugPage extends ArnavPage {
 
                 handle__dom_click(task) {
-                    this.getTasker("divSidebar").toggle();
+                    //this.getTasker("divSidebar").toggle();
+                    this.cease(task);
                 }
             }
 
@@ -45,18 +47,29 @@
                 height: 100vh;
             }
 
+            #pageHeader {
+                height: 30px;
+                padding-left: 4px;
+                padding-top: 4px;
+                border-bottom: 1px solid #1889F8;
+            }
+
             .ArnavSidebar {
                 position: absolute;
-                height: 100vh;
+                left: -4px;
+                top: 35px;
+                height: calc(100vh - 35px);
+                padding-right: 10pt;
                 z-index: 1;
                 background: antiquewhite;
+                box-shadow: 5px 0px 5px 0px rgba(0, 0, 0, 0.5);
                 overflow: hidden;
-                transition: width 0.5s;
+                transition: width .1s;
                 transition-timing-function: cubic-bezier(.56,-0.01,1,.14);
             }
 
             .ArnavSidebarVisible {
-                width: 25vw;
+                width: 150pt;
             }
 
             .ArnavSidebarHidden {
@@ -66,14 +79,22 @@
         </style>
     </head>
     <body onload="start()">
-        <div>
-            <div id="divSidebar" data-arnav-props="class: ArnavSidebar" class="ArnavSidebar ArnavSidebarHidden">
-                <ul>
-                    <li>Cats</li>
-                    <li>Dogs</li>
-                    <li>Rabbits</li>
-                    <li>Horses</li>
-                </ul>
+        <div id="pageHeader">
+            <div id="burger" data-arnav-props="class: ArnavBurger">
+                <div>
+                    <span id="burgerUnfold"><img src="burger-unfold.svg"></span>
+                    <span id="burgerFold" style="display: none"><img src="burger-fold.svg"></span>
+                </div>
+                <div>
+                    <div id="divSidebar" data-arnav-props="class: ArnavSidebar" class="ArnavSidebar ArnavSidebarHidden">
+                        <ul>
+                            <li>Cats</li>
+                            <li>Dogs</li>
+                            <li>Rabbits</li>
+                            <li>Horses</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </body>
